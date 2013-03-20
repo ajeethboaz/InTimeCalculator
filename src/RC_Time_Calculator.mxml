@@ -115,6 +115,7 @@
 			}
 			
 			public var xml:XML;
+			public var fl:File;
 			public function rewriteXML(fileName:String, acToAdd:ArrayCollection):void
 			{		
 				xml = objectToXML(acToAdd);
@@ -122,7 +123,9 @@
 				textArea.text = xmlString;
 				var fileRef:FileReference = new FileReference() 
 				
-				var fl:File = File.applicationStorageDirectory.resolvePath(fileName); 
+				
+				fl = File.desktopDirectory.resolvePath(fileName);
+				//fl.url = dataXML.url;
 				var fs:FileStream = new FileStream();  
 				
 				var xDoc:XML = new XML(xml); 
@@ -150,12 +153,26 @@
 				//selDates.dataProvider = user3;
 			}
 			
-			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			public function application1_creationCompleteHandler(event:FlexEvent):void
 			{
+				/*var fl:File = File.applicationStorageDirectory; 
+				var newXMLFile:File = newXMLFile;
+				var fileStream:FileStream = new FileStream();
+				var sep:String = File.separator;
+				var xmlFilePath:String =
+					fl + sep + "assets/recordsXML.xml";*/
 				//var fl:File = File.applicationStorageDirectory.resolvePath('recordsXML.xml'); 
-				dataXML.url = 'assets/recordsXML.xml';
+				//stage.nativeWindow.addEventListener(Event.CLOSING, windowClosingHandler);
+				var fl:File = File.desktopDirectory.resolvePath('assets/recordsXML.xml');
+				dataXML.url = fl.url;
 				dataXML.send();
 			
+			}
+			
+			public function windowClosingHandler(event:Event):void 
+			{
+				var oldFile:File = File.desktopDirectory.resolvePath('recordsXML.xml');
+				fl.copyTo(oldFile);
 			}
 			
 			private function dataResultHandler(event:ResultEvent):void
