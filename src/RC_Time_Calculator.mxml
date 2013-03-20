@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" applicationDPI="160" 
+			   creationComplete="application1_creationCompleteHandler(event)">
+	
+
+	<fx:Script>
+		<![CDATA[
+			import com.flexoop.utilities.dateutils.DateUtils;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.XMLListCollection;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.xml.SimpleXMLEncoder;
+			[Bindable]
+			public var dateString:String = new String();
+			[Bindable]
+			public var timeString:String = new String();
+			[Bindable]
+			public var clockInAC:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var clockOutAC:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var date1:Date;
+			[Bindable]
+			public var date2:Date;
+					
+			private function CurrentDateTimeString():String
+			{
+				var CurrentDateTime:Date = new Date();			
+				dateString = CurrentDateTime.getMonth().toString()+ "/"+CurrentDateTime.getDate().toString() +"/"+CurrentDateTime.getFullYear().toString();
+				timeString = CurrentDateTime.getHours().toString()+ ":"+ doubleDigitFormat(CurrentDateTime.getMinutes())+ ":"+ doubleDigitFormat(CurrentDateTime.getSeconds());
+				var DateTimeString:String = dateString + " " + timeString;
+				return DateTimeString;
+			}
+			
+			public function doubleDigitFormat(num:uint):String
+			{
+				
+				if(num < 10) {
+					return ("0" + num);
+				}
+				return num.toString();
+				
+			}
+			public static const MILLISECONDS:String	= "milliseconds";
+			private static const SECOND_VALUE:uint	= 1000;
+			private static const MINUTE_VALUE:uint	= SECOND_VALUE * 60;
+			private static const HOUR_VALUE:uint	= MINUTE_VALUE * 60;
+			
+
+			 
+			//[Bindable]
+			public var totalTime:Number = 0;
+			protected function calculateButton_clickHandler(event:MouseEvent):void
+			{
+				for(var i:int = 0; i<clockOutAC.length ; i++)
+				{
+					if(i<clockOutAC.length)
+					{
+						totalTime = clockOutAC[i].zdiff+clockOutAC[i+1].zdiff;	
+					}
+						
+				}
+			}
+			
+			protected function clockInOutButton_clickHandler(event:MouseEvent):void
+			{
+				if(clockInOutButton.selected)
+				{
+					clockInOutButton.label = 'Clock OUT';	
+					CurrentDateTimeString();
+					clockInAC.addItem(timeString);			
+					date1 = new Date();
+					
+					var item1:Object = new Object();
+					item1.date = date1;
+					item1.time = timeString;
+					item1.zdiff = 0;
+					clockOutAC.addItem(item1);					
+				}
+				else
+				{
+					clockInOutButton.label = 'Clock IN';
+					CurrentDateTimeString();
+					date2 = new Date();
+					var num:Number = Math.floor( DateUtils.dateDiff( DateUtils.MILLISECONDS, date1, date2 ) / MINUTE_VALUE );
+					
+					var item2:Object = new Object();
+					item2.date = date2;
+					item2.time = timeString;
+					item2.zdiff = 47;
+					clockOutAC.addItem(item2);		
+					
+					totalTime += item2.zdiff;	
+					
+					
+					//totalTime %=  60;
+					alert.text= 'Total Minutes = '+totalTime.toString();
+					hoursCalculation();
+					rewriteXML('assets/recordsXML.xml',clockOutAC);
+				}
+				
+			}
+	
+			public function hoursCalculation():void
+			{				
+				var total1:Number = totalTime/60;
+				var total:String = total1.toFixed(2);				
+				var results:Array = total.split('.');
+				var hrs:String = results[0].toString();
+				var minutes:Number = (results[1]*.60);
+				Hours.text = 'Total Hours = '+ hrs +':'+ minutes.toFixed(0);
+			}
+			
+			public var xml:XML;
+			public function rewriteXML(fileName:String, acToAdd:ArrayCollection):void
+			{		
+				xml = objectToXML(acToAdd);
+				var xmlString:String = xml.toXMLString();
+				textArea.text = xmlString;
+				var fileRef:FileReference = new FileReference() 
+				
+				var fl:File = File(fileName); 
+				var fs:FileStream = new FileStream();  
+				
+				var xDoc:XML = new XML(xml); 
+				xDoc.ignoreWhite = true; 
+				var xStr:String = xDoc.toString(); 
+				
+				fs.open(fl,FileMode.WRITE);  
+				fs.writeUTFBytes(xStr); 			
+			}
+			
+			private function objectToXML(obj:Object):XML {
+				var qName:QName = new QName('options');
+				var xmlDocument:XMLDocument = new XMLDocument();
+				var simpleXMLEncoder:SimpleXMLEncoder = new SimpleXMLEncoder(xmlDocument);
+				var xmlNode:XMLNode = simpleXMLEncoder.encodeValue(obj, qName, xmlDocument);
+				var xml:XML = new XML(xmlDocument.toString());
+				return xml;
+			}
+			
+			protected function dateSelector_changeHandler(event:Event):void
+			{
+				//var user3:ArrayCollection = xml.options.list.source.item.(@id == '1');
+				//selDates.dataProvider = user3;
+			}
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//var fl:File = File.applicationStorageDirectory.resolvePath('recordsXML.xml'); 
+				dataXML.url = 'assets/recordsXML.xml';
+				dataXML.send();
+			
+			}
+			
+			private function dataResultHandler(event:ResultEvent):void
+			{	
+				var xmlList:ArrayCollection = event.result.options.list.source.item;
+				clockOutAC = xmlList;
+											
+						
+				/*xmlListColl.filterFunction = xmlListColl_filterFunc;
+	
+				xmlListColl.refresh();
+				
+				selDates.dataProvider = xmlListColl;*/
+				
+			}
+			
+			private function xmlListColl_filterFunc(item:Object):Boolean {
+
+				var f:String = "ig";
+				var wasRegExp:RegExp = new RegExp('1', f);
+				var wasMatch:Boolean = wasRegExp.test(item.@id);
+				textArea.text = wasMatch.toString();
+				return (wasMatch);
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:HTTPService id="dataXML" result="dataResultHandler(event)" fault="{trace('Fault')}" />
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout/> 
+	</s:layout>
+	
+	<s:ToggleButton id="clockInOutButton" label="Clock IN" click="clockInOutButton_clickHandler(event)" width="100%" height="25%"/>
+	<s:HGroup horizontalAlign="center">
+		<s:Label id="alert"/>
+		<s:Spacer width="100"/>
+		<s:Label id="Hours" right="0"/>
+		<s:DateSpinner id="dateSelector" change="dateSelector_changeHandler(event)" visible="false" includeInLayout="false"/>
+	</s:HGroup>
+	<s:TextInput id="search" text="{dateSelector.selectedDate}" visible="false" includeInLayout="false"/>
+	<s:DataGrid id="selDates" dataProvider="{clockOutAC}"  verticalScrollPolicy="on" width="100%" height="50%">
+		<s:columns>
+			<s:ArrayCollection>
+				<s:GridColumn dataField="date" headerText="Date"/>
+				<s:GridColumn dataField="time" headerText="Time"/>
+				<s:GridColumn dataField="zdiff" headerText="Diff" />
+			</s:ArrayCollection>	
+		</s:columns>
+	</s:DataGrid>
+	<s:TextArea id="textArea" width="100%" height="50%" visible="false" includeInLayout="false"/>
+</s:Application>

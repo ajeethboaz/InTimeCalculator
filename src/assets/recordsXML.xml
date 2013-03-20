@@ -1,0 +1,34 @@
+<options>
+  <list>
+    <source>
+      <item>
+      	<id>1</id>
+        <date>Fri Apr 19 16:31:28 GMT+0530 2013</date>
+        <time>15:22:46</time>
+        <zdiff>0</zdiff>
+      </item>
+      <item>
+      	<id>2</id>
+        <date>Fri Apr 19 16:31:28 GMT+0530 2013</date>
+        <time>15:22:47</time>
+        <zdiff>47</zdiff>
+      </item>
+    </source>
+    <uid>EEA9D402-E3C2-8C8A-934A-8210B4B84426</uid>
+  </list>
+  <source>
+    <item>
+      <id>1</id>
+      <date>Fri Apr 19 16:31:28 GMT+0530 2013</date>
+      <time>15:22:46</time>
+      <zdiff>0</zdiff>
+    </item>
+    <item>
+      <id>2</id>
+      <date>Fri Apr 19 16:31:28 GMT+0530 2013</date>
+      <time>15:22:47</time>
+      <zdiff>47</zdiff>
+    </item>
+  </source>
+  <ignoreWhite>true</ignoreWhite>
+</options>
