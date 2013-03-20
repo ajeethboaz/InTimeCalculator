@@ -122,7 +122,7 @@
 				textArea.text = xmlString;
 				var fileRef:FileReference = new FileReference() 
 				
-				var fl:File = File(fileName); 
+				var fl:File = File.applicationStorageDirectory.resolvePath(fileName); 
 				var fs:FileStream = new FileStream();  
 				
 				var xDoc:XML = new XML(xml); 
