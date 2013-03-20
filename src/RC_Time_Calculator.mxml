@@ -130,7 +130,9 @@
 				var xStr:String = xDoc.toString(); 
 				
 				fs.open(fl,FileMode.WRITE);  
-				fs.writeUTFBytes(xStr); 			
+				fs.writeUTFBytes(xStr); 
+				
+				
 			}
 			
 			private function objectToXML(obj:Object):XML {
