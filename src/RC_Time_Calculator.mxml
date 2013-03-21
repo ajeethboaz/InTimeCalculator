@@ -89,7 +89,6 @@
 				}
 				else
 				{
-					
 					clockInOutButton.label = 'Clock IN';
 					CurrentDateTimeString();
 					date2 = new Date();
@@ -107,7 +106,6 @@
 					hoursCalculation();
 					rewriteXML('assets/recordsXML.xml',clockOutAC);
 				}
-				
 				//clockOutAC.source.reverse();
 			}
 	
