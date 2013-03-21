@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" applicationDPI="160" 
-			   creationComplete="application1_creationCompleteHandler(event)">
+			   creationComplete="application1_creationCompleteHandler(event)"
+			   initialize="view1_initializeHandler(event)" gestureSwipe="application1_gestureSwipeHandler(event)">
 	
 
 	<fx:Script>
@@ -12,6 +13,7 @@
 			import mx.events.FlexEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.rpc.xml.SimpleXMLEncoder;
+			
 			[Bindable]
 			public var dateString:String = new String();
 			[Bindable]
@@ -25,6 +27,12 @@
 			[Bindable]
 			public var date2:Date;
 					
+
+			protected function view1_initializeHandler(event:FlexEvent):void
+			{
+				Multitouch.inputMode = MultitouchInputMode.GESTURE;
+			}
+
 			private function CurrentDateTimeString():String
 			{
 				var CurrentDateTime:Date = new Date();			
@@ -74,7 +82,7 @@
 					date1 = new Date();
 					
 					var item1:Object = new Object();
-					item1.date = date1;
+					item1.date = dateString;
 					item1.time = timeString;
 					item1.zdiff = 0;
 					clockOutAC.addItemAt(item1,0);					
@@ -87,7 +95,7 @@
 					var num:Number = Math.floor( DateUtils.dateDiff( DateUtils.MILLISECONDS, date1, date2 ) / MINUTE_VALUE );
 					
 					var item2:Object = new Object();
-					item2.date = date2;
+					item2.date = dateString;
 					item2.time = timeString;
 					item2.zdiff = 47;
 					clockOutAC.addItemAt(item2,0);		
@@ -147,7 +155,6 @@
 				var fl:File = File.applicationStorageDirectory.resolvePath('assets/recordsXML.xml');
 				dataXML.url = fl.url;
 				dataXML.send();
-			
 			}
 			
 			public function windowClosingHandler(event:Event):void 
@@ -163,8 +170,42 @@
 				clockOutAC.source.reverse();
 			}
 			
-		
+			public function deleteItem():void{       
+				clockOutAC.removeItemAt(selDates.selectedIndex);
+				clockOutAC.refresh();
+				rewriteXML('assets/recordsXML.xml',clockOutAC);			
+			}
 			
+			
+			protected function application1_gestureSwipeHandler(event:TransformGestureEvent):void
+			{
+				switch(event.offsetX)
+				{
+					case 1:
+					{
+						deleteItem();
+						break;
+					}
+					case -1:
+					{
+						// swiped left
+						break;
+					}
+				}
+				switch(event.offsetY)
+				{
+					case 1:
+					{
+						// swiped down
+						break;
+					}
+					case -1:
+					{
+						// swiped up
+						break;
+					}
+				}
+			}
 			
 		]]>
 	</fx:Script>
@@ -188,6 +229,21 @@
 				<s:GridColumn dataField="date" headerText="Date"/>
 				<s:GridColumn dataField="time" headerText="Time"/>
 				<s:GridColumn dataField="zdiff" headerText="Diff" />
+				<s:GridColumn>
+					<s:itemRenderer>
+						<fx:Component>
+							<s:GridItemRenderer>
+								<s:Group  right="0" verticalCenter="0" width="40" height="19" >
+									<s:HGroup gap="2" horizontalCenter="0" verticalCenter="0" verticalAlign="middle">										
+										<s:Image id="deleteicon" buttonMode="true" toolTip="Delete"
+												  source="images/icon_delete_column.png"						  
+												  click="{outerDocument.deleteItem()}"/>
+									</s:HGroup>
+								</s:Group>
+							</s:GridItemRenderer>							
+						</fx:Component>
+					</s:itemRenderer>
+				</s:GridColumn>
 			</s:ArrayCollection>	
 		</s:columns>
 	</s:DataGrid>
