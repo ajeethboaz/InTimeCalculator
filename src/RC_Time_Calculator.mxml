@@ -89,6 +89,7 @@
 				}
 				else
 				{
+					
 					clockInOutButton.label = 'Clock IN';
 					CurrentDateTimeString();
 					date2 = new Date();
