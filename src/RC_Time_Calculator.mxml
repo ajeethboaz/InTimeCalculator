@@ -43,13 +43,11 @@
 			}
 			
 			public function doubleDigitFormat(num:uint):String
-			{
-				
+			{			
 				if(num < 10) {
 					return ("0" + num);
 				}
-				return num.toString();
-				
+				return num.toString();	
 			}
 			public static const MILLISECONDS:String	= "milliseconds";
 			private static const SECOND_VALUE:uint	= 1000;
