@@ -2,7 +2,8 @@
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" applicationDPI="160" 
 			   creationComplete="application1_creationCompleteHandler(event)"
-			   initialize="view1_initializeHandler(event)" gestureSwipe="application1_gestureSwipeHandler(event)">
+			   initialize="view1_initializeHandler(event)" 
+			   gestureSwipe="application1_gestureSwipeHandler(event)">
 	
 	<fx:Declarations>
 		<s:State name="clockInOutView"/>
@@ -36,9 +37,9 @@
 				Multitouch.inputMode = MultitouchInputMode.GESTURE;
 			}
 			
-			private function CurrentDateTimeString():String
+			private function CurrentDateTimeString(date:Date):String
 			{
-				var CurrentDateTime:Date = new Date();			
+				var CurrentDateTime:Date = date;			
 				dateString = CurrentDateTime.getMonth().toString()+ "/"+CurrentDateTime.getDate().toString() +"/"+CurrentDateTime.getFullYear().toString();
 				timeString = CurrentDateTime.getHours().toString()+ ":"+ doubleDigitFormat(CurrentDateTime.getMinutes())+ ":"+ doubleDigitFormat(CurrentDateTime.getSeconds());
 				var DateTimeString:String = dateString + " " + timeString;
@@ -78,9 +79,9 @@
 				if(clockInOutButton.selected)
 				{
 					clockInOutButton.label = 'Clock OUT';	
-					CurrentDateTimeString();
-					clockInAC.addItem(timeString);			
 					date1 = new Date();
+					CurrentDateTimeString(date1);
+					//clockInAC.addItem(timeString);			
 					
 					var item1:Object = new Object();
 					item1.date = dateString;
@@ -91,8 +92,8 @@
 				else
 				{
 					clockInOutButton.label = 'Clock IN';
-					CurrentDateTimeString();
 					date2 = new Date();
+					CurrentDateTimeString(date2);
 					var num:Number = Math.floor( DateUtils.dateDiff( DateUtils.MILLISECONDS, date1, date2 ) / MINUTE_VALUE );
 					
 					var item2:Object = new Object();
@@ -217,25 +218,15 @@
 				clockOutAC.refresh();
 			}
 			
-			private function filterAC(item:Object):Boolean{
-				
-				var CurrentDateTime:Date = searchByDate.selectedDate;			
-				dateString = CurrentDateTime.getMonth().toString()+ "/"+CurrentDateTime.getDate().toString() +"/"+CurrentDateTime.getFullYear().toString();
-				timeString = CurrentDateTime.getHours().toString()+ ":"+ doubleDigitFormat(CurrentDateTime.getMinutes())+ ":"+ doubleDigitFormat(CurrentDateTime.getSeconds());
-				var DateTimeString:String = dateString + " " + timeString;
+			private function filterAC(item:Object):Boolean
+			{
+				CurrentDateTimeString(searchByDate.selectedDate);
 				searchText.text = dateString;
 				
 				var isselected:Boolean = false;
 				if(item.date == dateString)
 				{
 					isselected = true;
-					/*for(var i:int = 0; i<selDates.dataProvider.length; i++)
-					{
-					totalTime = selDates.dataProvider[i].zdiff++;	
-					}
-					
-					alert.text= 'Total Minutes = '+totalTime.toString();
-					hoursCalculation();*/
 				}
 				return isselected;
 			}
