@@ -247,8 +247,7 @@
 				for each (var row:Object in selDates.dataProvider) {
 					totalMin += Number(row.zdiff);
 				}
-				
-				
+					
 				var total1:Number = totalMin/60;
 				var total:String = total1.toFixed(2);				
 				var results:Array = total.split('.');
