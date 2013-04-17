@@ -99,7 +99,7 @@
 					var item2:Object = new Object();
 					item2.date = dateString;
 					item2.time = timeString;
-					item2.zdiff = 47;
+					item2.zdiff = 24;
 					clockInOutAC.addItemAt(item2,0);		
 					
 					rewriteXML('assets/recordsXML.xml',clockInOutAC);
@@ -229,7 +229,7 @@
 				}
 				
 			}
-			
+	
 			public function TotalMinFunction(item:Object, col:GridColumn):String
 			{
 				var n:int = clockInOutAC.length;
